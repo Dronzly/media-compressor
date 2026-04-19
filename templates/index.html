@@ -183,7 +183,10 @@ form.addEventListener("submit", async (e) => {
         return;
     }
 
-    result.innerText = "Compressing... please wait...";
+result.innerText = mode === "convert"
+    ? "Converting... please wait..."
+    : "Compressing... please wait...";
+
     downloadLink.innerText = "";
 
 const mode = document.getElementById("mode").value;
@@ -192,6 +195,7 @@ const format = document.getElementById("format").value;
 const formData = new FormData();
 formData.append("file", file);
 formData.append("quality", quality);
+
 formData.append("mode", mode);
 formData.append("format", format);
 
