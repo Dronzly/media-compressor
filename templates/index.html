@@ -107,7 +107,8 @@
     <option value="png">Convert to PNG</option>
 </select><br>
 
-        <button type="submit">Compress</button>
+<button type="submit" id="submitBtn">Compress</button>
+
     </form>
 
     <img id="preview">
@@ -130,6 +131,14 @@ const dropZone = document.getElementById("dropZone");
 const preview = document.getElementById("preview");
 const result = document.getElementById("result");
 const downloadLink = document.getElementById("downloadLink");
+
+const modeSelect = document.getElementById("mode");
+const submitBtn = document.getElementById("submitBtn");
+
+modeSelect.addEventListener("change", () => {
+    submitBtn.innerText =
+        modeSelect.value === "convert" ? "Convert" : "Compress";
+});
 
 // Drag & Drop logic
 dropZone.addEventListener("dragover", (e) => {
@@ -177,15 +186,15 @@ form.addEventListener("submit", async (e) => {
     result.innerText = "Compressing... please wait...";
     downloadLink.innerText = "";
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("quality", quality);
+const mode = document.getElementById("mode").value;
+const format = document.getElementById("format").value;
 
-    const mode = document.getElementById("mode").value;
-    const format = document.getElementById("format").value;
+const formData = new FormData();
+formData.append("file", file);
+formData.append("quality", quality);
+formData.append("mode", mode);
+formData.append("format", format);
 
-    formData.append("mode", mode);
-    formData.append("format", format);	
 
     const response = await fetch("/upload", {
         method: "POST",
