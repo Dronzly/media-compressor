@@ -75,17 +75,27 @@
     <form id="uploadForm">
         <input type="file" id="fileInput" required><br>
 	
-	<label for="qualityInput">Compression Quality: <span id="qualityValue">50</span></label>
+	<label>
+    Compression Quality: <span id="qualityValue">50</span>
+</label><br>
 
-	<input 
-  	type="range" 
-  	id="qualityInput" 
-	min="10" 
-  	max="95" 
-  	value="50"
-  	oninput="updateQualityValue(this.value)"
-	/>
+<input 
+    type="range" 
+    id="qualitySlider" 
+    min="10" 
+    max="95" 
+    value="50"
+    oninput="syncQuality(this.value)"
+><br>
 
+<input 
+    type="number" 
+    id="qualityInput" 
+    min="10" 
+    max="95" 
+    value="50"
+    oninput="syncQuality(this.value)"
+><br>
 
         <button type="submit">Compress</button>
     </form>
@@ -98,8 +108,10 @@
 
 <script>
 
-function updateQualityValue(value) {
-  document.getElementById("qualityValue").innerText = value;
+function syncQuality(value) {
+    document.getElementById("qualitySlider").value = value;
+    document.getElementById("qualityInput").value = value;
+    document.getElementById("qualityValue").innerText = value;
 }
 
 const form = document.getElementById("uploadForm");
@@ -175,6 +187,9 @@ form.addEventListener("submit", async (e) => {
 
     downloadLink.href = `/download/${data.compressed_filename}`;
     downloadLink.innerText = "Download Your Compressed File";
+
+    syncQuality(50);
+
 });
 </script>
 
