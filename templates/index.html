@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Media Compressor</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            margin: auto;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        input, button {
+            margin: 10px;
+            padding: 10px;
+        }
+
+        button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #dropZone {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        #dropZone:hover {
+            background: #e3e3e3;
+        }
+
+        #preview {
+            max-width: 100%;
+            margin-top: 10px;
+            display: none;
+        }
+
+        #downloadLink {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Image Compression Tool By DRZ</h1>
+
+    <!-- Drag & Drop -->
+    <div id="dropZone">Drag & Drop Image Here</div>
+
+    <form id="uploadForm">
+        <input type="file" id="fileInput" required><br>
+
+        <label>Compression Quality (1–100):</label><br>
+        <input type="number" id="qualityInput" value="50" min="1" max="100"><br>
+
+        <button type="submit">Compress</button>
+    </form>
+
+    <img id="preview">
+
+    <p id="result"></p>
+    <a id="downloadLink"></a>
+</div>
+
+<script>
+const form = document.getElementById("uploadForm");
+const fileInput = document.getElementById("fileInput");
+const dropZone = document.getElementById("dropZone");
+const preview = document.getElementById("preview");
+const result = document.getElementById("result");
+const downloadLink = document.getElementById("downloadLink");
+
+// Drag & Drop logic
+dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.style.background = "#e3e3e3";
+});
+
+dropZone.addEventListener("dragleave", () => {
+    dropZone.style.background = "white";
+});
+
+dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.style.background = "white";
+
+    const files = e.dataTransfer.files;
+    fileInput.files = files;
+
+    showPreview(files[0]);
+});
+
+// Preview function
+function showPreview(file) {
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+}
+
+// When file selected manually
+fileInput.addEventListener("change", () => {
+    showPreview(fileInput.files[0]);
+});
+
+// Submit form
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const file = fileInput.files[0];
+    const quality = document.getElementById("qualityInput").value;
+
+    if (!file) {
+        alert("Please select a file");
+        return;
+    }
+
+    result.innerText = "Compressing... please wait...";
+    downloadLink.innerText = "";
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("quality", quality);
+
+    const response = await fetch("/upload", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await response.json();
+
+    result.innerText =
+        `Original: ${data.original_size_kb} KB | Compressed: ${data.compressed_size_kb} KB`;
+
+    downloadLink.href = `/download/${data.compressed_filename}`;
+    downloadLink.innerText = "Download Your Compressed File";
+});
+</script>
+
+</body>
+</html>
