@@ -24,7 +24,9 @@ def home():
 @app.post("/upload")
 def upload_and_compress(
     file: UploadFile = File(...),
-    quality: int = Form(50)
+    quality: int = Form(50),
+    mode: str = Form("compress"),
+    format: str = Form("jpg")
 ):
     upload_path = os.path.join(UPLOAD_DIR, file.filename)
 
@@ -39,6 +41,32 @@ def upload_and_compress(
 
     # Open image
     img = Image.open(upload_path)
+
+# Convert mode
+if mode == "convert":
+    filename_no_ext = os.path.splitext(file.filename)[0]
+
+    if format == "png":
+        output_filename = filename_no_ext + ".png"
+        output_path = os.path.join(OUTPUT_DIR, output_filename)
+        img.save(output_path, "PNG")
+
+    elif format == "jpg":
+        output_filename = filename_no_ext + ".jpg"
+        output_path = os.path.join(OUTPUT_DIR, output_filename)
+
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+
+        img.save(output_path, "JPEG", optimize=True, quality=quality)
+
+    return {
+        "original_filename": file.filename,
+        "compressed_filename": output_filename,
+        "original_size_kb": round(os.path.getsize(upload_path) / 1024, 2),
+        "compressed_size_kb": round(os.path.getsize(output_path) / 1024, 2),
+        "mode": "convert"
+    }
 
     # Convert if needed
     if img.mode in ("RGBA", "P"):
