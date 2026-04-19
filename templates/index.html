@@ -74,9 +74,18 @@
 
     <form id="uploadForm">
         <input type="file" id="fileInput" required><br>
+	
+	<label for="qualityInput">Compression Quality: <span id="qualityValue">50</span></label>
 
-        <label>Compression Quality (1–100):</label><br>
-        <input type="number" id="qualityInput" value="50" min="1" max="100"><br>
+	<input 
+  	type="range" 
+  	id="qualityInput" 
+	min="10" 
+  	max="95" 
+  	value="50"
+  	oninput="updateQualityValue(this.value)"
+	/>
+
 
         <button type="submit">Compress</button>
     </form>
@@ -88,6 +97,11 @@
 </div>
 
 <script>
+
+function updateQualityValue(value) {
+  document.getElementById("qualityValue").innerText = value;
+}
+
 const form = document.getElementById("uploadForm");
 const fileInput = document.getElementById("fileInput");
 const dropZone = document.getElementById("dropZone");
@@ -151,9 +165,13 @@ form.addEventListener("submit", async (e) => {
     });
 
     const data = await response.json();
+Ü
+    const reduction = (
+       (data.original_size_kb - data.compressed_size_kb) / data.original_size_kb * 100
+    ).toFixed(1);
 
     result.innerText =
-        `Original: ${data.original_size_kb} KB | Compressed: ${data.compressed_size_kb} KB`;
+    `Original: ${data.original_size_kb} KB | Compressed: ${data.compressed_size_kb} KB | Reduced: ${reduction}%`;	
 
     downloadLink.href = `/download/${data.compressed_filename}`;
     downloadLink.innerText = "Download Your Compressed File";
