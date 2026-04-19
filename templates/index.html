@@ -3,15 +3,30 @@
 <head>
     <title>Media Compressor</title>
     <style>
+
+:root {
+    --bg: #f4f4f4;
+    --text: #000;
+    --card: white;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #121212;
+        --text: #ffffff;
+        --card: #1e1e1e;
+    }
+}
         body {
             font-family: Arial;
-            background: #f4f4f4;
+	    background: var(--bg);
+    	    color: var(--text);
             text-align: center;
             padding-top: 50px;
         }
 
         .container {
-            background: white;
+            background: var(--card);
             padding: 30px;
             border-radius: 10px;
             width: 400px;
@@ -32,7 +47,7 @@
         }
 
         #dropZone {
-            border: 2px dashed #ccc;
+	    border: 2px dashed var(--text);
             padding: 20px;
             margin-bottom: 15px;
         }
