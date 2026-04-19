@@ -55,8 +55,8 @@ def upload_and_compress(
 
             if img.mode in ("RGBA", "P"):
                 img = img.convert("RGB")
+            img.save(output_path, "JPEG")
 
-            img.save(output_path, "JPEG", optimize=True, quality=quality)
 
     # ======================
     # 🗜️ COMPRESS MODE
