@@ -1,4 +1,6 @@
-venv/
+outputs/*
+uploads/*
 __pycache__/
-uploads/
-outputs/
+
+!outputs/.gitkeep
+!uploads/.gitkeep
