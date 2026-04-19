@@ -85,13 +85,6 @@ def upload_and_compress(
         "mode": mode
     }
 
-        "original_filename": file.filename,
-        "compressed_filename": output_filename,
-        "original_size_kb": round(original_size / 1024, 2),
-        "compressed_size_kb": round(compressed_size / 1024, 2),
-        "quality_used": quality
-    }
-
 
 # Download route
 @app.get("/download/{filename}")
