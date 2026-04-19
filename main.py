@@ -21,6 +21,7 @@ def home():
 
 
 # Upload + Compress
+
 @app.post("/upload")
 def upload_and_compress(
     file: UploadFile = File(...),
@@ -30,59 +31,60 @@ def upload_and_compress(
 ):
     upload_path = os.path.join(UPLOAD_DIR, file.filename)
 
-    # Force output as JPG
-    filename_no_ext = os.path.splitext(file.filename)[0]
-    output_filename = filename_no_ext + ".jpg"
-    output_path = os.path.join(OUTPUT_DIR, output_filename)
-
     # Save original file
     with open(upload_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # Open image
     img = Image.open(upload_path)
 
-# Convert mode
-if mode == "convert":
     filename_no_ext = os.path.splitext(file.filename)[0]
 
-    if format == "png":
-        output_filename = filename_no_ext + ".png"
-        output_path = os.path.join(OUTPUT_DIR, output_filename)
-        img.save(output_path, "PNG")
+    # ======================
+    # 🔄 CONVERT MODE
+    # ======================
+    if mode == "convert":
 
-    elif format == "jpg":
+        if format == "png":
+            output_filename = filename_no_ext + ".png"
+            output_path = os.path.join(OUTPUT_DIR, output_filename)
+            img.save(output_path, "PNG")
+
+        elif format == "jpg":
+            output_filename = filename_no_ext + ".jpg"
+            output_path = os.path.join(OUTPUT_DIR, output_filename)
+
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+
+            img.save(output_path, "JPEG", optimize=True, quality=quality)
+
+    # ======================
+    # 🗜️ COMPRESS MODE
+    # ======================
+    else:
         output_filename = filename_no_ext + ".jpg"
         output_path = os.path.join(OUTPUT_DIR, output_filename)
 
         if img.mode in ("RGBA", "P"):
             img = img.convert("RGB")
 
+        quality = max(1, min(100, quality))
+
         img.save(output_path, "JPEG", optimize=True, quality=quality)
 
-    return {
-        "original_filename": file.filename,
-        "compressed_filename": output_filename,
-        "original_size_kb": round(os.path.getsize(upload_path) / 1024, 2),
-        "compressed_size_kb": round(os.path.getsize(output_path) / 1024, 2),
-        "mode": "convert"
-    }
-
-    # Convert if needed
-    if img.mode in ("RGBA", "P"):
-        img = img.convert("RGB")
-
-    # Clamp quality (safety)
-    quality = max(1, min(100, quality))
-
-    # Compress and save
-    img.save(output_path, "JPEG", optimize=True, quality=quality)
-
-    # Get sizes
+    # File sizes
     original_size = os.path.getsize(upload_path)
     compressed_size = os.path.getsize(output_path)
 
     return {
+
+        "original_filename": file.filename,
+        "compressed_filename": output_filename,
+        "original_size_kb": round(original_size / 1024, 2),
+        "compressed_size_kb": round(compressed_size / 1024, 2),
+        "mode": mode
+    }
+
         "original_filename": file.filename,
         "compressed_filename": output_filename,
         "original_size_kb": round(original_size / 1024, 2),
