@@ -177,7 +177,7 @@ form.addEventListener("submit", async (e) => {
     });
 
     const data = await response.json();
-Ü
+
     const reduction = (
        (data.original_size_kb - data.compressed_size_kb) / data.original_size_kb * 100
     ).toFixed(1);
