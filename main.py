@@ -13,17 +13,14 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
-# Home route (serves HTML)
 @app.get("/", response_class=HTMLResponse)
 def home():
     with open("templates/index.html") as f:
         return f.read()
 
 
-# Upload + Compress
-
 @app.post("/upload")
-def upload_and_compress(
+def upload_and_process(
     file: UploadFile = File(...),
     quality: int = Form(50),
     mode: str = Form("compress"),
@@ -31,21 +28,16 @@ def upload_and_compress(
 ):
     upload_path = os.path.join(UPLOAD_DIR, file.filename)
 
-    # Save original file
     with open(upload_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     img = Image.open(upload_path)
-    print("MODE RECEIVED:", mode)
-    print("FORMAT RECEIVED:", format)
-
     filename_no_ext = os.path.splitext(file.filename)[0]
 
     # ======================
-    # 🔄 CONVERT MODE
+    # 🔄 CONVERT ONLY
     # ======================
     if mode == "convert":
-
         if format == "png":
             output_filename = filename_no_ext + ".png"
             output_path = os.path.join(OUTPUT_DIR, output_filename)
@@ -57,11 +49,11 @@ def upload_and_compress(
 
             if img.mode in ("RGBA", "P"):
                 img = img.convert("RGB")
+
             img.save(output_path, "JPEG")
 
-
     # ======================
-    # 🗜️ COMPRESS MODE
+    # 🗜️ COMPRESS ONLY
     # ======================
     else:
         output_filename = filename_no_ext + ".jpg"
@@ -74,21 +66,19 @@ def upload_and_compress(
 
         img.save(output_path, "JPEG", optimize=True, quality=quality)
 
-    # File sizes
+    # Sizes
     original_size = os.path.getsize(upload_path)
-    compressed_size = os.path.getsize(output_path)
+    output_size = os.path.getsize(output_path)
 
     return {
-
         "original_filename": file.filename,
         "compressed_filename": output_filename,
         "original_size_kb": round(original_size / 1024, 2),
-        "compressed_size_kb": round(compressed_size / 1024, 2),
+        "output_size_kb": round(output_size / 1024, 2),
         "mode": mode
     }
 
 
-# Download route
 @app.get("/download/{filename}")
 def download_file(filename: str):
     file_path = os.path.join(OUTPUT_DIR, filename)
@@ -101,4 +91,3 @@ def download_file(filename: str):
         )
 
     return {"error": "File not found"}
-

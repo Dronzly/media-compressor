@@ -19,11 +19,7 @@
             box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
         }
 
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        input, button {
+        input, button, select {
             margin: 10px;
             padding: 10px;
         }
@@ -35,31 +31,16 @@
             cursor: pointer;
         }
 
-        button:hover {
-            background: #0056b3;
-        }
-
         #dropZone {
             border: 2px dashed #ccc;
             padding: 20px;
             margin-bottom: 15px;
-            cursor: pointer;
-        }
-
-        #dropZone:hover {
-            background: #e3e3e3;
         }
 
         #preview {
             max-width: 100%;
             margin-top: 10px;
             display: none;
-        }
-
-        #downloadLink {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -69,156 +50,118 @@
 <div class="container">
     <h1>Image Compression Tool By DRZ</h1>
 
-    <!-- Drag & Drop -->
     <div id="dropZone">Drag & Drop Image Here</div>
 
     <form id="uploadForm">
         <input type="file" id="fileInput" required><br>
-	
-	<label>
-    Compression Quality: <span id="qualityValue">50</span>
-</label><br>
 
-<input 
-    type="range" 
-    id="qualitySlider" 
-    min="10" 
-    max="95" 
-    value="50"
-    oninput="syncQuality(this.value)"
-><br>
+        <label>Quality: <span id="qualityValue">50</span></label><br>
 
-<input 
-    type="number" 
-    id="qualityInput" 
-    min="10" 
-    max="95" 
-    value="50"
-    oninput="syncQuality(this.value)"
-><br>
+        <input type="range" id="qualitySlider" min="10" max="95" value="50"><br>
+        <input type="number" id="qualityInput" min="10" max="95" value="50"><br>
 
-	<select id="mode">
-    <option value="compress">Compress</option>
-    <option value="convert">Convert</option>
-</select><br>
+        <select id="mode">
+            <option value="compress">Compress</option>
+            <option value="convert">Convert</option>
+        </select><br>
 
-<select id="format">
-    <option value="jpg">Convert to JPG</option>
-    <option value="png">Convert to PNG</option>
-</select><br>
+        <select id="format">
+            <option value="jpg">Convert to JPG</option>
+            <option value="png">Convert to PNG</option>
+        </select><br>
 
-<button type="submit" id="submitBtn">Compress</button>
-
+        <button type="submit" id="submitBtn">Compress</button>
     </form>
 
     <img id="preview">
-
     <p id="result"></p>
     <a id="downloadLink"></a>
 </div>
 
 <script>
-
-function syncQuality(value) {
-    document.getElementById("qualitySlider").value = value;
-    document.getElementById("qualityInput").value = value;
-    document.getElementById("qualityValue").innerText = value;
-}
-
 const form = document.getElementById("uploadForm");
 const fileInput = document.getElementById("fileInput");
-const dropZone = document.getElementById("dropZone");
 const preview = document.getElementById("preview");
 const result = document.getElementById("result");
 const downloadLink = document.getElementById("downloadLink");
 
 const modeSelect = document.getElementById("mode");
+const formatSelect = document.getElementById("format");
 const submitBtn = document.getElementById("submitBtn");
 
-modeSelect.addEventListener("change", () => {
-    submitBtn.innerText =
-        modeSelect.value === "convert" ? "Convert" : "Compress";
-});
+const slider = document.getElementById("qualitySlider");
+const input = document.getElementById("qualityInput");
+const valueText = document.getElementById("qualityValue");
 
-// Drag & Drop logic
-dropZone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dropZone.style.background = "#e3e3e3";
-});
-
-dropZone.addEventListener("dragleave", () => {
-    dropZone.style.background = "white";
-});
-
-dropZone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    dropZone.style.background = "white";
-
-    const files = e.dataTransfer.files;
-    fileInput.files = files;
-
-    showPreview(files[0]);
-});
-
-// Preview function
-function showPreview(file) {
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
+// Sync quality
+function sync(val) {
+    slider.value = val;
+    input.value = val;
+    valueText.innerText = val;
 }
 
-// When file selected manually
-fileInput.addEventListener("change", () => {
-    showPreview(fileInput.files[0]);
+slider.oninput = () => sync(slider.value);
+input.oninput = () => sync(input.value);
+
+// Mode switching
+modeSelect.addEventListener("change", () => {
+    const isConvert = modeSelect.value === "convert";
+
+    slider.disabled = isConvert;
+    input.disabled = isConvert;
+    formatSelect.disabled = !isConvert;
+
+    submitBtn.innerText = isConvert ? "Convert" : "Compress";
 });
 
-// Submit form
+// Preview
+fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+});
+
+// Submit
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const file = fileInput.files[0];
-    const quality = document.getElementById("qualityInput").value;
+    const mode = modeSelect.value;
+    const format = formatSelect.value;
+    const quality = input.value;
 
-    if (!file) {
-        alert("Please select a file");
-        return;
+    if (!file) return;
+
+    result.innerText = mode === "convert"
+        ? "Converting..."
+        : "Compressing...";
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("mode", mode);
+
+    if (mode === "compress") {
+        formData.append("quality", quality);
+    } else {
+        formData.append("format", format);
     }
 
-result.innerText = mode === "convert"
-    ? "Converting... please wait..."
-    : "Compressing... please wait...";
-
-    downloadLink.innerText = "";
-
-const mode = document.getElementById("mode").value;
-const format = document.getElementById("format").value;
-
-const formData = new FormData();
-formData.append("file", file);
-formData.append("quality", quality);
-
-formData.append("mode", mode);
-formData.append("format", format);
-
-
-    const response = await fetch("/upload", {
+    const res = await fetch("/upload", {
         method: "POST",
         body: formData
     });
 
-    const data = await response.json();
+    const data = await res.json();
 
-    const reduction = (
-       (data.original_size_kb - data.compressed_size_kb) / data.original_size_kb * 100
-    ).toFixed(1);
-
-    result.innerText =
-    `Original: ${data.original_size_kb} KB | Compressed: ${data.compressed_size_kb} KB | Reduced: ${reduction}%`;	
+    if (mode === "compress") {
+        result.innerText =
+            `Original: ${data.original_size_kb} KB | Output: ${data.output_size_kb} KB`;
+    } else {
+        result.innerText = "Conversion completed";
+    }
 
     downloadLink.href = `/download/${data.compressed_filename}`;
-    downloadLink.innerText = "Download Your Compressed File";
-
-    syncQuality(50);
-
+    downloadLink.innerText = "Download File";
 });
 </script>
 
