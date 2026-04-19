@@ -36,6 +36,8 @@ def upload_and_compress(
         shutil.copyfileobj(file.file, buffer)
 
     img = Image.open(upload_path)
+    print("MODE RECEIVED:", mode)
+    print("FORMAT RECEIVED:", format)
 
     filename_no_ext = os.path.splitext(file.filename)[0]
 
