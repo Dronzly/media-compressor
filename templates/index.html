@@ -77,6 +77,22 @@ input, button, select {
     border-radius: 5px;
 }
 
+.remove-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    cursor: pointer;
+    line-height: 16px;
+    text-align: center;
+}
+
 </style>
 </head>
 
@@ -172,13 +188,25 @@ function updatePreview() {
         const img = document.createElement("img");
         img.src = URL.createObjectURL(file);
 
-        // 🔥 NUMBER LABEL
+        // 🔢 Number
         const number = document.createElement("div");
         number.className = "preview-number";
         number.innerText = index + 1;
 
+        // ❌ Remove button
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "remove-btn";
+        removeBtn.innerText = "×";
+
+        removeBtn.onclick = (e) => {
+            e.stopPropagation(); // prevent drag conflict
+            fileList.splice(index, 1);
+            updatePreview();
+        };
+
         div.appendChild(img);
         div.appendChild(number);
+        div.appendChild(removeBtn);
 
         previewContainer.appendChild(div);
     });
