@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse, FileResponse
 import shutil
 import os
 from PIL import Image
+import img2pdf
 
 app = FastAPI()
 
@@ -31,9 +32,6 @@ def upload_and_compress(
     # ======================
     # 📄 IMAGE → PDF (FIXED)
     # ======================
-
-import img2pdf
-
 if mode == "pdf":
     safe_paths = []
 
@@ -59,6 +57,7 @@ if mode == "pdf":
         with open(output_path, "wb") as f:
             f.write(img2pdf.convert(safe_paths))
     except Exception as e:
+	print("PDF ERROR:", e)
         return {"error": str(e)}
 
     original_size = sum(os.path.getsize(p) for p in safe_paths)
