@@ -93,6 +93,20 @@ input, button, select {
     text-align: center;
 }
 
+.preview-item {
+    width: 80px;
+    height: 80px;
+    cursor: grab;
+    position: relative;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.preview-item:active {
+    cursor: grabbing;
+    transform: scale(1.05);
+    opacity: 0.7;
+}
+
 </style>
 </head>
 
@@ -123,12 +137,13 @@ input, button, select {
 
 <button type="submit" id="submitBtn">Compress</button>
 </form>
-
+<p id="pageCount"></p>
 <p id="result"></p>
 <a id="downloadLink"></a>
 </div>
 
 <script>
+const pageCount = document.getElementById("pageCount");
 const form = document.getElementById("uploadForm");
 const fileInput = document.getElementById("fileInput");
 const previewContainer = document.getElementById("previewContainer");
@@ -209,14 +224,21 @@ function updatePreview() {
         div.appendChild(removeBtn);
 
         previewContainer.appendChild(div);
+	pageCount.innerText = `Total Pages: ${fileList.length}`;
     });
 }
 
 // 🔥 DRAG START
-previewContainer.addEventListener("dragstart", (e) => {
+previewContainer.addEventListener("drop", (e) => {
     const item = e.target.closest(".preview-item");
     if (!item) return;
-    dragStartIndex = item.dataset.index;
+
+    const dragEndIndex = item.dataset.index;
+
+    [fileList[dragStartIndex], fileList[dragEndIndex]] =
+    [fileList[dragEndIndex], fileList[dragStartIndex]];
+
+    updatePreview();
 });
 
 // 🔥 DRAG OVER
