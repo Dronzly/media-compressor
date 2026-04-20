@@ -156,6 +156,29 @@ button {
     width: 0%;
     background: linear-gradient(135deg, #00C6FF, #007BFF);
 }
+
+#toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #222;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 0.3s;
+    z-index: 999;
+}
+
+#toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.preview-item:hover {
+    transform: scale(1.05);
+}
 </style>
 </head>
 
@@ -165,7 +188,7 @@ button {
 
 <div class="hero">
     <h1>Fast, Secure & Free Media Tools by DRZ</h1>
-    <p>Compress, convert, and merge images instantly — no signup needed.</p>
+    <p>Compress, Convert, and merge images to PDF instantly — no signup needed.</p>
     <p>Secure and private — your files are automatically deleted after processing.</p>
     <div class="features">
         <div>⚡ Fast</div>
@@ -218,6 +241,8 @@ button {
 
 </div>
 
+<div id="toast"></div>
+
 <script>
 const fileInput = document.getElementById("fileInput");
 const previewContainer = document.getElementById("previewContainer");
@@ -237,6 +262,17 @@ const valueText = document.getElementById("qualityValue");
 
 const barContainer = document.getElementById("progressBarContainer");
 const bar = document.getElementById("progressBar");
+
+const toast = document.getElementById("toast");
+
+function showToast(msg) {
+    toast.innerText = msg;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2500);
+}
 
 let fileList = [];
 let dragIndex = null;
@@ -266,7 +302,15 @@ modeSelect.addEventListener("change", () => {
 
 // file select
 fileInput.addEventListener("change", () => {
-    fileList = fileList.concat(Array.from(fileInput.files));
+    const newFiles = Array.from(fileInput.files);
+
+newFiles.forEach(file => {
+    if (!file.type.startsWith("image/")) {
+        showToast("Only image files allowed");
+        return;
+    }
+    fileList.push(file);
+});
     render();
 });
 
@@ -348,7 +392,10 @@ form.addEventListener("submit", async (e) => {
     const format = formatSelect.value;
     const quality = input.value;
 
-    result.innerText = "Processing...";
+    result.innerText =
+    mode === "pdf" ? "Creating PDF..." :
+    mode === "convert" ? "Converting..." :
+    "Compressing...";
 
     const formData = new FormData();
     fileList.forEach(file => formData.append("files", file));
@@ -388,21 +435,27 @@ form.addEventListener("submit", async (e) => {
         result.innerText = `Reduced ${reduction}%`;
     } else {
         bar.style.width = "100%";
-        result.innerText = "Done";
+        result.innerText =
+    mode === "pdf" ? "PDF ready ✅" :
+    mode === "convert" ? "Converted successfully ✅" :
+    result.innerText;
     }
 
     downloadLink.href = `/download/${data.compressed_filename}`;
+    downloadLink.click();
+        showToast("Download started 🚀");
     downloadLink.innerText = "Download File";
 });
 
 // drop zone
-const dropZone = document.getElementById("dropZone");
+const dropped = Array.from(e.dataTransfer.files);
 
-dropZone.onclick = () => fileInput.click();
-
-dropZone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dropZone.classList.add("active");
+dropped.forEach(file => {
+    if (!file.type.startsWith("image/")) {
+        showToast("Only image files allowed");
+        return;
+    }
+    fileList.push(file);
 });
 
 dropZone.addEventListener("dragleave", () => {
