@@ -165,6 +165,29 @@ input:focus, select:focus {
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
+#loader {
+    margin-top: 10px;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+#dropZone {
+    border: 2px dashed #aaa;
+    padding: 25px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#dropZone:hover {
+    border-color: #007BFF;
+}
+
+#dropZone.active {
+    background: rgba(0,123,255,0.1);
+    border-color: #007BFF;
+}
+
 </style>
 </head>
 
@@ -191,7 +214,10 @@ Compress, convert, and merge images instantly — fast, secure, and free.
     </div>
 </div>
 
+<div id="loader" style="display:none;">Processing...</div>
+
 <form id="uploadForm">
+<div id="dropZone">Drop images here or click to upload</div>
 <input type="file" id="fileInput" multiple required>
 <div id="previewContainer"></div>
 
@@ -217,6 +243,12 @@ Compress, convert, and merge images instantly — fast, secure, and free.
 <p style="font-size:12px; opacity:0.7;">
     Your files are processed securely and automatically deleted after use.
 </p>
+
+<div id="loader" style="display:none;">
+    ⏳ Processing your file...
+</div>
+
+<div id="loader" style="display:none;">Processing...</div>
 
 <p id="pageCount"></p>
 <p id="result"></p>
@@ -349,6 +381,9 @@ previewContainer.addEventListener("drop", (e) => {
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+document.getElementById("loader").style.display = "block";
+submitBtn.disabled = true;
+
     if (fileList.length === 0) return;
 
     const mode = modeSelect.value;
@@ -373,6 +408,9 @@ form.addEventListener("submit", async (e) => {
         body: formData
     });
 
+    document.getElementById("loader").style.display = "none";
+    submitBtn.disabled = false;
+
     const data = await res.json();
 
     result.innerText =
@@ -382,6 +420,27 @@ form.addEventListener("submit", async (e) => {
 
     downloadLink.href = `/download/${data.compressed_filename}`;
     downloadLink.innerText = "Download File";
+});
+
+const dropZone = document.getElementById("dropZone");
+
+dropZone.addEventListener("click", () => fileInput.click());
+
+dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("active");
+});
+
+dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("active");
+});
+
+dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("active");
+
+    fileList = Array.from(e.dataTransfer.files);
+    render();
 });
 </script>
 
