@@ -58,6 +58,25 @@ input, button, select {
     object-fit: cover;
     border-radius: 8px;
 }
+
+.preview-item {
+    width: 80px;
+    height: 80px;
+    cursor: grab;
+    position: relative; /* IMPORTANT */
+}
+
+.preview-number {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 5px;
+}
+
 </style>
 </head>
 
@@ -153,7 +172,14 @@ function updatePreview() {
         const img = document.createElement("img");
         img.src = URL.createObjectURL(file);
 
+        // 🔥 NUMBER LABEL
+        const number = document.createElement("div");
+        number.className = "preview-number";
+        number.innerText = index + 1;
+
         div.appendChild(img);
+        div.appendChild(number);
+
         previewContainer.appendChild(div);
     });
 }
