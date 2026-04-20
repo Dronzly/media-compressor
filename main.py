@@ -31,41 +31,37 @@ def upload_and_compress(
     # ======================
     # 📄 IMAGE → PDF (FIXED)
     # ======================
-    if mode == "pdf":
-        images = []
+import img2pdf
 
-        for file in files:
-            upload_path = os.path.join(UPLOAD_DIR, file.filename)
+if mode == "pdf":
+    image_paths = []
 
-            with open(upload_path, "wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
+    for file in files:
+        upload_path = os.path.join(UPLOAD_DIR, file.filename)
 
-            img = Image.open(upload_path)
+        with open(upload_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
-            if img.mode in ("RGBA", "P"):
-                img = img.convert("RGB")
+        image_paths.append(upload_path)
 
-            images.append(img)
+    output_filename = "combined.pdf"
+    output_path = os.path.join(OUTPUT_DIR, output_filename)
 
-        if len(images) == 0:
-            return {"error": "No images uploaded"}
+    try:
+        with open(output_path, "wb") as f:
+            f.write(img2pdf.convert(image_paths))
+    except Exception as e:
+        return {"error": str(e)}
 
-        output_filename = "combined.pdf"
-        output_path = os.path.join(OUTPUT_DIR, output_filename)
+    original_size = sum(os.path.getsize(p) for p in image_paths)
+    output_size = os.path.getsize(output_path)
 
-        images[0].save(output_path, save_all=True, append_images=images[1:])
-
-        original_size = sum(
-            os.path.getsize(os.path.join(UPLOAD_DIR, f.filename)) for f in files
-        )
-        output_size = os.path.getsize(output_path)
-
-        return {
-            "compressed_filename": output_filename,
-            "original_size_kb": round(original_size / 1024, 2),
-            "output_size_kb": round(output_size / 1024, 2),
-            "mode": mode
-        }
+    return {
+        "compressed_filename": output_filename,
+        "original_size_kb": round(original_size / 1024, 2),
+        "output_size_kb": round(output_size / 1024, 2),
+        "mode": mode
+    }
 
     # ======================
     # SINGLE FILE MODES

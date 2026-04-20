@@ -6,6 +6,7 @@ fastapi==0.136.0
 h11==0.16.0
 idna==3.11
 pillow==12.2.0
+img2pdf
 pydantic==2.13.2
 pydantic_core==2.46.2
 python-multipart==0.0.26
