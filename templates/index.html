@@ -1,36 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Media Tool</title>
+<title>Media Tool by DRZ</title>
+
+<style>
+:root {
+    --bg: #ffffff;
+    --text: #000000;
+    --box: #f4f4f4;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #121212;
+        --text: #ffffff;
+        --box: #1e1e1e;
+    }
+}
+
+body {
+    font-family: Arial;
+    background: var(--bg);
+    color: var(--text);
+    text-align: center;
+    padding-top: 50px;
+}
+
+.container {
+    background: var(--box);
+    padding: 30px;
+    border-radius: 10px;
+    width: 400px;
+    margin: auto;
+}
+
+input, button, select {
+    margin: 10px;
+    padding: 10px;
+}
+</style>
 </head>
 
 <body>
 
-<h2>Media Tool</h2>
+<div class="container">
+<h1>Media Tool</h1>
 
 <form id="uploadForm">
-    <input type="file" id="fileInput" multiple required><br>
+<input type="file" id="fileInput" multiple required><br>
 
-    <label>Quality: <span id="qualityValue">50</span></label><br>
-    <input type="range" id="qualitySlider" min="10" max="95" value="50"><br>
-    <input type="number" id="qualityInput" min="10" max="95" value="50"><br>
+<label>Quality: <span id="qualityValue">50</span></label><br>
 
-    <select id="mode">
-        <option value="compress">Compress</option>
-        <option value="convert">Convert</option>
-        <option value="pdf">Image to PDF</option>
-    </select><br>
+<input type="range" id="qualitySlider" min="10" max="95" value="50"><br>
+<input type="number" id="qualityInput" min="10" max="95" value="50"><br>
 
-    <select id="format">
-        <option value="jpg">Convert to JPG</option>
-        <option value="png">Convert to PNG</option>
-    </select><br>
+<select id="mode">
+<option value="compress">Compress</option>
+<option value="convert">Convert</option>
+<option value="pdf">Image to PDF</option>
+</select><br>
 
-    <button type="submit" id="submitBtn">Compress</button>
+<select id="format">
+<option value="jpg">Convert to JPG</option>
+<option value="png">Convert to PNG</option>
+</select><br>
+
+<button type="submit" id="submitBtn">Compress</button>
 </form>
 
 <p id="result"></p>
 <a id="downloadLink"></a>
+</div>
 
 <script>
 const form = document.getElementById("uploadForm");
@@ -82,10 +122,10 @@ form.addEventListener("submit", async (e) => {
 
     result.innerText =
         mode === "pdf"
-            ? "Creating PDF..."
-            : mode === "convert"
-            ? "Converting..."
-            : "Compressing...";
+        ? "Creating PDF..."
+        : mode === "convert"
+        ? "Converting..."
+        : "Compressing...";
 
     const formData = new FormData();
 
