@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+	<!DOCTYPE html>
 <html>
 <head>
 <title>Media Tool</title>
@@ -49,7 +49,6 @@ input, button, select {
 .preview-item {
     width: 80px;
     height: 80px;
-    position: relative;
     cursor: grab;
 }
 
@@ -68,7 +67,7 @@ input, button, select {
 <h1>Media Tool by DRZ</h1>
 
 <form id="uploadForm">
-<input type="file" id="fileInput" multiple required><br>
+<input type="file" id="fileInput" multiple required>
 <div id="previewContainer"></div>
 
 <label>Quality: <span id="qualityValue">50</span></label><br>
@@ -98,7 +97,6 @@ input, button, select {
 const form = document.getElementById("uploadForm");
 const fileInput = document.getElementById("fileInput");
 const previewContainer = document.getElementById("previewContainer");
-let fileList = [];
 const result = document.getElementById("result");
 const downloadLink = document.getElementById("downloadLink");
 
@@ -110,52 +108,101 @@ const slider = document.getElementById("qualitySlider");
 const input = document.getElementById("qualityInput");
 const valueText = document.getElementById("qualityValue");
 
+let fileList = [];
+let dragStartIndex = null;
+
+// 🔧 Sync quality
 function sync(val) {
     slider.value = val;
     input.value = val;
     valueText.innerText = val;
 }
-
 slider.oninput = () => sync(slider.value);
 input.oninput = () => sync(input.value);
 
+// 🔧 Mode switch
 modeSelect.addEventListener("change", () => {
     const mode = modeSelect.value;
 
-    const isConvert = mode === "convert";
-    const isPDF = mode === "pdf";
+    slider.disabled = (mode !== "compress");
+    input.disabled = (mode !== "compress");
+    formatSelect.disabled = (mode !== "convert");
 
-    slider.disabled = isConvert || isPDF;
-    input.disabled = isConvert || isPDF;
-    formatSelect.disabled = !isConvert;
-
-    if (isConvert) submitBtn.innerText = "Convert";
-    else if (isPDF) submitBtn.innerText = "Create PDF";
-    else submitBtn.innerText = "Compress";
+    submitBtn.innerText =
+        mode === "pdf" ? "Create PDF" :
+        mode === "convert" ? "Convert" :
+        "Compress";
 });
 
+// 🔥 FILE SELECT → SHOW PREVIEW
+fileInput.addEventListener("change", () => {
+    fileList = Array.from(fileInput.files);
+    updatePreview();
+});
+
+// 🔥 RENDER PREVIEW
+function updatePreview() {
+    previewContainer.innerHTML = "";
+
+    fileList.forEach((file, index) => {
+        const div = document.createElement("div");
+        div.className = "preview-item";
+        div.draggable = true;
+        div.dataset.index = index;
+
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+
+        div.appendChild(img);
+        previewContainer.appendChild(div);
+    });
+}
+
+// 🔥 DRAG START
+previewContainer.addEventListener("dragstart", (e) => {
+    const item = e.target.closest(".preview-item");
+    if (!item) return;
+    dragStartIndex = item.dataset.index;
+});
+
+// 🔥 DRAG OVER
+previewContainer.addEventListener("dragover", (e) => {
+    e.preventDefault();
+});
+
+// 🔥 DROP → REORDER
+previewContainer.addEventListener("drop", (e) => {
+    const item = e.target.closest(".preview-item");
+    if (!item) return;
+
+    const dragEndIndex = item.dataset.index;
+
+    [fileList[dragStartIndex], fileList[dragEndIndex]] =
+    [fileList[dragEndIndex], fileList[dragStartIndex]];
+
+    updatePreview();
+});
+
+// 🔥 SUBMIT
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const files = fileList;
+    if (fileList.length === 0) return;
+
     const mode = modeSelect.value;
     const format = formatSelect.value;
     const quality = input.value;
 
-    if (files.length === 0) return;
-
     result.innerText =
-        mode === "pdf"
-        ? "Creating PDF..."
-        : mode === "convert"
-        ? "Converting..."
-        : "Compressing...";
+        mode === "pdf" ? "Creating PDF..." :
+        mode === "convert" ? "Converting..." :
+        "Compressing...";
 
     const formData = new FormData();
 
-    for (let i = 0; i < files.length; i++) {
-        formData.append("files", files[i]);
-    }
+    fileList.forEach(file => {
+        formData.append("files", file);
+    });
 
     formData.append("mode", mode);
 
@@ -174,82 +221,14 @@ form.addEventListener("submit", async (e) => {
 
     const data = await res.json();
 
-    if (mode === "compress") {
-        result.innerText =
-            `Original: ${data.original_size_kb} KB | Output: ${data.output_size_kb} KB`;
-    } else if (mode === "convert") {
-        result.innerText = "Conversion done";
-    } else {
-        result.innerText = "PDF created successfully";
-    }
+    result.innerText =
+        mode === "pdf" ? "PDF created successfully" :
+        mode === "convert" ? "Conversion done" :
+        `Original: ${data.original_size_kb} KB | Output: ${data.output_size_kb} KB`;
 
     downloadLink.href = `/download/${data.compressed_filename}`;
     downloadLink.innerText = "Download File";
 });
-
-const previewContainer = document.getElementById("previewContainer");
-
-let fileList = [];
-
-fileInput.addEventListener("change", () => {
-    previewContainer.innerHTML = "";
-    fileList = Array.from(fileInput.files);
-
-    fileList.forEach((file, index) => {
-        const div = document.createElement("div");
-        div.classList.add("preview-item");
-        div.draggable = true;
-        div.dataset.index = index;
-
-        const img = document.createElement("img");
-        img.src = URL.createObjectURL(file);
-
-        div.appendChild(img);
-        previewContainer.appendChild(div);
-    });
-});
-
-let dragStartIndex;
-
-previewContainer.addEventListener("dragstart", (e) => {
-    dragStartIndex = e.target.closest(".preview-item").dataset.index;
-});
-
-previewContainer.addEventListener("dragover", (e) => {
-    e.preventDefault();
-});
-
-previewContainer.addEventListener("drop", (e) => {
-    const target = e.target.closest(".preview-item");
-    if (!target) return;
-
-    const dragEndIndex = target.dataset.index;
-
-    // swap
-    [fileList[dragStartIndex], fileList[dragEndIndex]] =
-    [fileList[dragEndIndex], fileList[dragStartIndex]];
-
-    updatePreview();
-});
-
-function updatePreview() {
-    previewContainer.innerHTML = "";
-
-    fileList.forEach((file, index) => {
-        const div = document.createElement("div");
-        div.classList.add("preview-item");
-        div.draggable = true;
-        div.dataset.index = index;
-
-        const img = document.createElement("img");
-        img.src = URL.createObjectURL(file);
-
-        div.appendChild(img);
-        previewContainer.appendChild(div);
-    });
-}
-
-
 </script>
 
 </body>
