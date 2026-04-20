@@ -31,29 +31,37 @@ def upload_and_compress(
     # ======================
     # 📄 IMAGE → PDF (FIXED)
     # ======================
+
 import img2pdf
 
 if mode == "pdf":
-    image_paths = []
+    safe_paths = []
 
     for file in files:
         upload_path = os.path.join(UPLOAD_DIR, file.filename)
 
+        # Save original
         with open(upload_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        image_paths.append(upload_path)
+        # Open + convert to safe JPEG
+        img = Image.open(upload_path).convert("RGB")
+
+        safe_path = upload_path + "_safe.jpg"
+        img.save(safe_path, "JPEG")
+
+        safe_paths.append(safe_path)
 
     output_filename = "combined.pdf"
     output_path = os.path.join(OUTPUT_DIR, output_filename)
 
     try:
         with open(output_path, "wb") as f:
-            f.write(img2pdf.convert(image_paths))
+            f.write(img2pdf.convert(safe_paths))
     except Exception as e:
         return {"error": str(e)}
 
-    original_size = sum(os.path.getsize(p) for p in image_paths)
+    original_size = sum(os.path.getsize(p) for p in safe_paths)
     output_size = os.path.getsize(output_path)
 
     return {
