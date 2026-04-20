@@ -20,16 +20,16 @@ def home():
 
 
 @app.post("/upload")
-def upload_and_process(
+def upload_and_compress(
     files: list[UploadFile] = File(...),
     quality: int = Form(50),
     mode: str = Form("compress"),
     format: str = Form("jpg")
 ):
-    output_filename = ""
+    print("MODE:", mode)
 
     # ======================
-    # 📄 IMAGE → PDF (MULTIPLE)
+    # 📄 IMAGE → PDF (FIXED)
     # ======================
     if mode == "pdf":
         images = []
@@ -47,12 +47,17 @@ def upload_and_process(
 
             images.append(img)
 
+        if len(images) == 0:
+            return {"error": "No images uploaded"}
+
         output_filename = "combined.pdf"
         output_path = os.path.join(OUTPUT_DIR, output_filename)
 
         images[0].save(output_path, save_all=True, append_images=images[1:])
 
-        original_size = sum(os.path.getsize(os.path.join(UPLOAD_DIR, f.filename)) for f in files)
+        original_size = sum(
+            os.path.getsize(os.path.join(UPLOAD_DIR, f.filename)) for f in files
+        )
         output_size = os.path.getsize(output_path)
 
         return {
@@ -78,6 +83,7 @@ def upload_and_process(
     # 🔄 CONVERT
     # ======================
     if mode == "convert":
+
         if format == "png":
             output_filename = filename_no_ext + ".png"
             output_path = os.path.join(OUTPUT_DIR, output_filename)
