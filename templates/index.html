@@ -75,10 +75,11 @@
         <input type="range" id="qualitySlider" min="10" max="95" value="50"><br>
         <input type="number" id="qualityInput" min="10" max="95" value="50"><br>
 
-        <select id="mode">
-            <option value="compress">Compress</option>
-            <option value="convert">Convert</option>
-        </select><br>
+<select id="mode">
+    <option value="compress">Compress</option>
+    <option value="convert">Convert</option>
+    <option value="pdf">Image to PDF</option>
+</select>
 
         <select id="format">
             <option value="jpg">Convert to JPG</option>
@@ -120,13 +121,18 @@ input.oninput = () => sync(input.value);
 
 // Mode switching
 modeSelect.addEventListener("change", () => {
-    const isConvert = modeSelect.value === "convert";
+    const mode = modeSelect.value;
 
-    slider.disabled = isConvert;
-    input.disabled = isConvert;
+    const isConvert = mode === "convert";
+    const isPDF = mode === "pdf";
+
+    slider.disabled = isConvert || isPDF;
+    input.disabled = isConvert || isPDF;
     formatSelect.disabled = !isConvert;
 
-    submitBtn.innerText = isConvert ? "Convert" : "Compress";
+    if (isConvert) submitBtn.innerText = "Convert";
+    else if (isPDF) submitBtn.innerText = "Convert to PDF";
+    else submitBtn.innerText = "Compress";
 });
 
 // Preview
@@ -168,13 +174,14 @@ form.addEventListener("submit", async (e) => {
 
     const data = await res.json();
 
-    if (mode === "compress") {
-        result.innerText =
-            `Original: ${data.original_size_kb} KB | Output: ${data.output_size_kb} KB`;
-    } else {
-        result.innerText = "Conversion completed";
-    }
-
+if (mode === "compress") {
+    result.innerText =
+        `Original: ${data.original_size_kb} KB | Output: ${data.output_size_kb} KB`;
+} else if (mode === "convert") {
+    result.innerText = "Conversion completed";
+} else {
+    result.innerText = "PDF created successfully";
+}
     downloadLink.href = `/download/${data.compressed_filename}`;
     downloadLink.innerText = "Download File";
 });
