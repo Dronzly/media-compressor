@@ -29,60 +29,49 @@ def upload_and_compress(
     print("MODE:", mode)
 
     # ======================
-    # 📄 IMAGE → PDF (FIXED)
+    # 📄 IMAGE → PDF
     # ======================
 
-if mode == "pdf":
-    try:
-        import img2pdf
-
-        safe_paths = []
-
-        for file in files:
-            upload_path = os.path.join(UPLOAD_DIR, file.filename)
-
-            # Save original
-            with open(upload_path, "wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
-
-            # Convert to safe RGB JPEG
-            img = Image.open(upload_path).convert("RGB")
-
-            safe_path = upload_path + "_safe.jpg"
-            img.save(safe_path, "JPEG")
-
-            safe_paths.append(safe_path)
-
-        output_filename = "combined.pdf"
-        output_path = os.path.join(OUTPUT_DIR, output_filename)
-
+    if mode == "pdf":
         try:
+            import img2pdf
+
+            safe_paths = []
+
+            for file in files:
+                upload_path = os.path.join(UPLOAD_DIR, file.filename)
+
+                with open(upload_path, "wb") as buffer:
+                    shutil.copyfileobj(file.file, buffer)
+
+                img = Image.open(upload_path).convert("RGB")
+
+                safe_path = upload_path + "_safe.jpg"
+                img.save(safe_path, "JPEG")
+
+                safe_paths.append(safe_path)
+
+            output_filename = "combined.pdf"
+            output_path = os.path.join(OUTPUT_DIR, output_filename)
+
             with open(output_path, "wb") as f:
                 f.write(img2pdf.convert(safe_paths))
+
+            return {
+                "compressed_filename": output_filename,
+                "mode": mode
+            }
+
         except Exception as e:
             print("PDF ERROR:", e)
             return {"error": str(e)}
 
-        original_size = sum(os.path.getsize(p) for p in safe_paths)
-        output_size = os.path.getsize(output_path)
-
-        return {
-            "compressed_filename": output_filename,
-            "original_size_kb": round(original_size / 1024, 2),
-            "output_size_kb": round(output_size / 1024, 2),
-            "mode": mode
-        }
-
-    except Exception as e:
-        print("IMPORT ERROR:", e)
-        return {"error": "PDF module failed to load"}
-
     # ======================
     # SINGLE FILE MODES
     # ======================
+
     file = files[0]
     upload_path = os.path.join(UPLOAD_DIR, file.filename)
-
     with open(upload_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
