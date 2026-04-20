@@ -109,7 +109,6 @@ input, button, select {
 
 <div class="container">
 <h1>Media Tools by DRZ</h1>
-
 <form id="uploadForm">
 <input type="file" id="fileInput" multiple required>
 <div id="previewContainer"></div>
@@ -232,6 +231,7 @@ previewContainer.addEventListener("dragstart", (e) => {
     if (!item) return;
 
     dragStartIndex = item.dataset.index;
+    e.dataTransfer.setData("text/plain", "");
 
     const img = item.querySelector("img");
     dragPreview.src = img.src;
