@@ -1,103 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Media Compressor</title>
-    <style>
-
-:root {
-    --bg: #f4f4f4;
-    --text: #000;
-    --card: white;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg: #121212;
-        --text: #ffffff;
-        --card: #1e1e1e;
-    }
-}
-        body {
-            font-family: Arial;
-	    background: var(--bg);
-    	    color: var(--text);
-            text-align: center;
-            padding-top: 50px;
-        }
-
-        .container {
-            background: var(--card);
-            padding: 30px;
-            border-radius: 10px;
-            width: 400px;
-            margin: auto;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-        }
-
-        input, button, select {
-            margin: 10px;
-            padding: 10px;
-        }
-
-        button {
-            background: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        #dropZone {
-	    border: 2px dashed var(--text);
-            padding: 20px;
-            margin-bottom: 15px;
-        }
-
-        #preview {
-            max-width: 100%;
-            margin-top: 10px;
-            display: none;
-        }
-    </style>
+    <title>Media Tool</title>
 </head>
 
 <body>
 
-<div class="container">
-    <h1>Media Compression/Tool By DRZ</h1>
+<h2>Media Tool</h2>
 
-    <div id="dropZone">Drag & Drop Image Here</div>
+<form id="uploadForm">
+    <input type="file" id="fileInput" multiple required><br>
 
-    <form id="uploadForm">
-        <input type="file" id="fileInput" required><br>
+    <label>Quality: <span id="qualityValue">50</span></label><br>
+    <input type="range" id="qualitySlider" min="10" max="95" value="50"><br>
+    <input type="number" id="qualityInput" min="10" max="95" value="50"><br>
 
-        <label>Quality: <span id="qualityValue">50</span></label><br>
+    <select id="mode">
+        <option value="compress">Compress</option>
+        <option value="convert">Convert</option>
+        <option value="pdf">Image to PDF</option>
+    </select><br>
 
-        <input type="range" id="qualitySlider" min="10" max="95" value="50"><br>
-        <input type="number" id="qualityInput" min="10" max="95" value="50"><br>
+    <select id="format">
+        <option value="jpg">Convert to JPG</option>
+        <option value="png">Convert to PNG</option>
+    </select><br>
 
-<select id="mode">
-    <option value="compress">Compress</option>
-    <option value="convert">Convert</option>
-    <option value="pdf">Image to PDF</option>
-</select>
+    <button type="submit" id="submitBtn">Compress</button>
+</form>
 
-        <select id="format">
-            <option value="jpg">Convert to JPG</option>
-            <option value="png">Convert to PNG</option>
-        </select><br>
-
-        <button type="submit" id="submitBtn">Compress</button>
-    </form>
-
-    <img id="preview">
-    <p id="result"></p>
-    <a id="downloadLink"></a>
-</div>
+<p id="result"></p>
+<a id="downloadLink"></a>
 
 <script>
 const form = document.getElementById("uploadForm");
 const fileInput = document.getElementById("fileInput");
-const preview = document.getElementById("preview");
 const result = document.getElementById("result");
 const downloadLink = document.getElementById("downloadLink");
 
@@ -109,7 +46,6 @@ const slider = document.getElementById("qualitySlider");
 const input = document.getElementById("qualityInput");
 const valueText = document.getElementById("qualityValue");
 
-// Sync quality
 function sync(val) {
     slider.value = val;
     input.value = val;
@@ -119,7 +55,6 @@ function sync(val) {
 slider.oninput = () => sync(slider.value);
 input.oninput = () => sync(input.value);
 
-// Mode switching
 modeSelect.addEventListener("change", () => {
     const mode = modeSelect.value;
 
@@ -131,39 +66,40 @@ modeSelect.addEventListener("change", () => {
     formatSelect.disabled = !isConvert;
 
     if (isConvert) submitBtn.innerText = "Convert";
-    else if (isPDF) submitBtn.innerText = "Convert to PDF";
+    else if (isPDF) submitBtn.innerText = "Create PDF";
     else submitBtn.innerText = "Compress";
 });
 
-// Preview
-fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
-});
-
-// Submit
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const file = fileInput.files[0];
+    const files = fileInput.files;
     const mode = modeSelect.value;
     const format = formatSelect.value;
     const quality = input.value;
 
-    if (!file) return;
+    if (files.length === 0) return;
 
-    result.innerText = mode === "convert"
-        ? "Converting..."
-        : "Compressing...";
+    result.innerText =
+        mode === "pdf"
+            ? "Creating PDF..."
+            : mode === "convert"
+            ? "Converting..."
+            : "Compressing...";
 
     const formData = new FormData();
-    formData.append("file", file);
+
+    for (let i = 0; i < files.length; i++) {
+        formData.append("files", files[i]);
+    }
+
     formData.append("mode", mode);
 
     if (mode === "compress") {
         formData.append("quality", quality);
-    } else {
+    }
+
+    if (mode === "convert") {
         formData.append("format", format);
     }
 
@@ -174,14 +110,15 @@ form.addEventListener("submit", async (e) => {
 
     const data = await res.json();
 
-if (mode === "compress") {
-    result.innerText =
-        `Original: ${data.original_size_kb} KB | Output: ${data.output_size_kb} KB`;
-} else if (mode === "convert") {
-    result.innerText = "Conversion completed";
-} else {
-    result.innerText = "PDF created successfully";
-}
+    if (mode === "compress") {
+        result.innerText =
+            `Original: ${data.original_size_kb} KB | Output: ${data.output_size_kb} KB`;
+    } else if (mode === "convert") {
+        result.innerText = "Conversion done";
+    } else {
+        result.innerText = "PDF created successfully";
+    }
+
     downloadLink.href = `/download/${data.compressed_filename}`;
     downloadLink.innerText = "Download File";
 });
