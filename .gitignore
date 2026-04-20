@@ -1,6 +1,7 @@
-outputs/*
-uploads/*
 __pycache__/
-
-!outputs/.gitkeep
-!uploads/.gitkeep
+*.pyc
+venv/
+.env
+uploads/
+outputs/
+# Ignore all files in the outputs and uploads directories, except for .gitkeep
