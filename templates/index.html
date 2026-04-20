@@ -229,16 +229,16 @@ function updatePreview() {
 }
 
 // 🔥 DRAG START
-previewContainer.addEventListener("drop", (e) => {
+previewContainer.addEventListener("dragstart", (e) => {
     const item = e.target.closest(".preview-item");
     if (!item) return;
 
-    const dragEndIndex = item.dataset.index;
+    dragStartIndex = item.dataset.index;
 
-    [fileList[dragStartIndex], fileList[dragEndIndex]] =
-    [fileList[dragEndIndex], fileList[dragStartIndex]];
+    const img = item.querySelector("img");
 
-    updatePreview();
+    // 🔥 FORCE drag preview
+    e.dataTransfer.setDragImage(img, 40, 40);
 });
 
 // 🔥 DRAG OVER
