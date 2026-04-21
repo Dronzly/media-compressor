@@ -114,7 +114,7 @@ button {
 }
 
 .preview-item {
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.25s ease, opacity 0.2s ease;
 }
 
 .preview-item img {
@@ -284,6 +284,11 @@ button:active {
 
 html {
     scroll-behavior: smooth;
+}
+
+.preview-item.over {
+    outline: 2px dashed #007BFF;
+    transform: scale(1.1);
 }
 
 </style>
@@ -513,6 +518,16 @@ previewContainer.addEventListener("dragstart", (e) => {
     e.dataTransfer.setDragImage(img, 40, 40);
 });
 
+previewContainer.addEventListener("dragenter", (e) => {
+    const item = e.target.closest(".preview-item");
+    if (item) item.classList.add("over");
+});
+
+previewContainer.addEventListener("dragleave", (e) => {
+    const item = e.target.closest(".preview-item");
+    if (item) item.classList.remove("over");
+});
+
 previewContainer.addEventListener("dragover", (e) => e.preventDefault());
 
 previewContainer.addEventListener("drop", (e) => {
@@ -521,10 +536,13 @@ previewContainer.addEventListener("drop", (e) => {
 
     const dropIndex = target.dataset.index;
 
-    [fileList[dragIndex], fileList[dropIndex]] =
-    [fileList[dropIndex], fileList[dragIndex]];
+   const draggedItem = fileList.splice(dragIndex, 1)[0];
+  fileList.splice(dropIndex, 0, draggedItem);
 
-    render();
+   document.querySelectorAll(".preview-item").forEach(el => {
+        el.classList.remove("over");
+    });
+    render(); 
 });
 
 // submit
@@ -625,6 +643,17 @@ dropZone.addEventListener("drop", (e) => {
     fileList = fileList.concat(Array.from(e.dataTransfer.files));
     render();
 });
+
+previewContainer.addEventListener("dragenter", (e) => {
+    const item = e.target.closest(".preview-item");
+    if (item) item.classList.add("over");
+});
+
+previewContainer.addEventListener("dragleave", (e) => {
+    const item = e.target.closest(".preview-item");
+    if (item) item.classList.remove("over");
+});
+
 </script>
 
 <footer style="margin-top:50px; font-size:12px; opacity:0.6;">
