@@ -7,7 +7,7 @@
 :root {
     --bg: #ffffff;
     --text: #000000;
-    --box: #f4f4f4;
+    --box: #712121;
 }
 
 body.dark {
@@ -79,10 +79,16 @@ input, select {
     max-width: 420px;
     padding: 10px 12px;
     font-size: 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(16, 10, 10, 0.989);
-    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.15);
+    background: transparent;
     color: var(--text);
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
 }
 
 input, select, button {
@@ -105,16 +111,20 @@ select {
 }
 
 button {
-    padding: 10px 18px;
-    border-radius: 10px;
+    padding: 10px 16px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    background: linear-gradient(135deg, #007BFF, #ff0d00);
+    background: #ff0000;
     color: white;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
+
+button:hover {
+    background: #005ff8;
+    color: white;}
 
 button:hover {
     transform: translateY(-2px);
@@ -244,9 +254,28 @@ button:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 40px;
-    background: var(--box);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 14px 40px;
+    background: var(--bg);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.nav-links span {
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.nav-links span:hover {
+    opacity: 1;
 }
 
 .nav-links span {
@@ -288,9 +317,35 @@ button:hover {
 }
 
 .tool-card {
-    transition: all 0.25s ease;
+    width: 240px;
+    padding: 18px;
+    background: var(--bg);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
+.tool-card.active {
+    border-color: #ff0000e9;
+    background: rgba(237, 242, 247, 0.05);
+}
+
+.tool-card h3 {
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.tool-card p {
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+.tool-card:hover {
+    transform: translateY(-4px);
+    border-color: #007BFF;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
 .tool-card:hover {
     transform: translateY(-6px) scale(1.02);
     box-shadow: 0 15px 35px rgba(0,0,0,0.12);
@@ -362,15 +417,15 @@ input, select {
 
 .form-card {
     width: 100%;
-    max-width: 500px;
-    background: var(--box);
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    max-width: 480px;
+    background: var(--bg);
+    padding: 22px;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.08);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 14px;
 }
 
 .label-row {
@@ -394,6 +449,22 @@ input[type="range"] {
 form {
     display: flex;
     justify-content:  center;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.container {
+    max-width: 1000px;
+}
+
+.hero h1 {
+    font-weight: 600;
+}
+
+.hero p {
+    font-size: 14px;
 }
 
 </style>
@@ -576,8 +647,13 @@ newFiles.forEach(file => {
 
 function selectTool(mode) {
     modeSelect.value = mode;
-
     modeSelect.dispatchEvent(new Event("change"));
+
+    document.querySelectorAll(".tool-card").forEach(card => {
+        card.classList.remove("active");
+    });
+
+    event.currentTarget.classList.add("active");
 
     window.scrollTo({
         top: document.getElementById("uploadForm").offsetTop - 50,
