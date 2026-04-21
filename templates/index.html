@@ -10,6 +10,18 @@
     --box: #f4f4f4;
 }
 
+body.dark {
+    --bg: #121212;
+    --text: #ffffff;
+    --box: #1e1e1e;
+}
+
+body.light {
+    --bg: #ffffff;
+    --text: #000000;
+    --box: #f4f4f4;
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         --bg: #121212;
@@ -63,15 +75,50 @@ input, button, select {
 }
 
 input, select {
-    width: 80%;
-    border: 1px solid #ccc;
+    width: 100%;
+    max-width: 420px;
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(16, 10, 10, 0.989);
+    background: var(--bg);
+    color: var(--text);
+}
+
+input, select, button {
+    transition: all 0.2s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
+}
+
+input[type="range"] {
+    width: 60%;
+    max-width: 400px;
+}
+
+select {
+    cursor: pointer;
 }
 
 button {
-    background: linear-gradient(135deg, #007BFF, #00C6FF);
-    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    background: linear-gradient(135deg, #007BFF, #ff0d00);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 #dropZone {
@@ -291,16 +338,75 @@ html {
     transform: scale(1.1);
 }
 
+#themeToggle {
+    margin-left: 15px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: var(--box);
+    color: var(--text);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+input, select {
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.form-card {
+    width: 100%;
+    max-width: 500px;
+    background: var(--box);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.label-row {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+input[type="range"] {
+    width: 100%;
+    max-width: 420px;
+    height: 6px;
+    border-radius: 10px;
+    background: #ccc;
+    outline: none;
+}
+
+form {
+    display: flex;
+    justify-content:  center;
+}
+
 </style>
 </head>
 
 <body>
-
-    <div class="navbar">
+    
+<div class="navbar">
     <h2>DRZ Tools</h2>
     <div class="nav-links">
         <span>All Tools</span>
         <span>About</span>
+        <button id="themeToggle">🌙</button>
     </div>
 </div>
 
@@ -345,12 +451,19 @@ html {
 
 <form id="uploadForm">
 
+    <div class="form-card"></div>
+
 <div id="dropZone">Drop images here or click to upload</div>
 <input type="file" id="fileInput" multiple required>
 
 <div id="previewContainer"></div>
 
-<label>Quality: <span id="qualityValue">50</span></label><br>
+<div class="label-row">
+    <span>Quality</span>
+    <span id="qualityValue">50</span>
+</div>
+
+<br>
 
 <input type="range" id="qualitySlider" min="10" max="95" value="50"><br>
 <input type="number" id="qualityInput" min="10" max="95" value="50"><br>
@@ -367,6 +480,8 @@ html {
 </select><br>
 
 <button type="submit" id="submitBtn">Compress</button>
+
+</div>
 
 </form>
 
@@ -652,6 +767,31 @@ previewContainer.addEventListener("dragenter", (e) => {
 previewContainer.addEventListener("dragleave", (e) => {
     const item = e.target.closest(".preview-item");
     if (item) item.classList.remove("over");
+});
+
+const toggleBtn = document.getElementById("themeToggle");
+
+// Load saved theme
+const savedTheme = localStorage.getItem("theme");
+
+if (savedTheme) {
+    document.body.classList.add(savedTheme);
+    toggleBtn.innerText = savedTheme === "dark" ? "☀️" : "🌙";
+}
+
+// Toggle click
+toggleBtn.addEventListener("click", () => {
+    if (document.body.classList.contains("dark")) {
+        document.body.classList.remove("dark");
+        document.body.classList.add("light");
+        localStorage.setItem("theme", "light");
+        toggleBtn.innerText = "🌙";
+    } else {
+        document.body.classList.remove("light");
+        document.body.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+        toggleBtn.innerText = "☀️";
+    }
 });
 
 </script>
