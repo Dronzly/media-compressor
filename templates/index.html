@@ -75,7 +75,7 @@ button {
 }
 
 #dropZone {
-    border: 2px dashed #aaa;
+    border: 2px dashed #ad1919;
     padding: 25px;
     border-radius: 12px;
     cursor: pointer;
@@ -83,8 +83,13 @@ button {
 }
 
 #dropZone.active {
-    background: rgba(0,123,255,0.1);
-    border-color: #007BFF;
+    background: rgba(47, 85, 125, 0.15);
+    border-color: #142f4c;
+    transform: scale(1.02);
+}
+
+#dropZone {
+    transition: all 0.2s ease;
 }
 
 #previewContainer {
@@ -102,6 +107,14 @@ button {
     height: 80px;
     position: relative;
     cursor: grab;
+}
+
+.preview-item:hover {
+    transform: scale(1.08);
+}
+
+.preview-item {
+    transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .preview-item img {
@@ -179,22 +192,149 @@ button {
 .preview-item:hover {
     transform: scale(1.05);
 }
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: var(--box);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.nav-links span {
+    margin-left: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.hero {
+    margin: 40px 0;
+}
+
+.hero h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    opacity: 0.7;
+}
+
+.tools {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.tool-card {
+    width: 220px;
+    padding: 20px;
+    background: var(--box);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: left;
+}
+
+.tool-card {
+    transition: all 0.25s ease;
+}
+
+.tool-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.preview-item:hover {
+    transform: scale(1.08);
+}
+
+.container {
+    animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+button:active {
+    transform: scale(0.96);
+}
+
+#loader {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
 </style>
 </head>
 
 <body>
 
+    <div class="navbar">
+    <h2>DRZ Tools</h2>
+    <div class="nav-links">
+        <span>All Tools</span>
+        <span>About</span>
+    </div>
+</div>
+
 <div class="container">
+
+<div class="hero">
+    <h1>All-in-One Media Toolkit</h1>
+    <p>
+        Compress, convert, and create PDFs instantly.<br>
+        Fast. Secure. No uploads stored.
+    </p>
+</div>
 
 <div class="hero">
     <h1>Fast, Secure & Free Media Tools by DRZ</h1>
     <p>Compress, Convert, and merge images to PDF instantly — no signup needed.</p>
-    <p>Secure and private — your files are automatically deleted after processing.</p>
+    <p>Secure and private</p>
     <div class="features">
         <div>⚡ Fast</div>
         <div>🔒 Secure</div>
         <div>📁 Multi Format</div>
         <div>📦 Batch Support</div>
+    </div>
+</div>
+
+<div class="tools">
+    <div class="tool-card" onclick="selectTool('compress')">
+        <h3>Image Compressor</h3>
+        <p>Reduce image size without losing quality</p>
+    </div>
+
+    <div class="tool-card" onclick="selectTool('convert')">
+        <h3>Image Converter</h3>
+        <p>Convert PNG ↔ JPG / PNG ↔ JPG</p>
+    </div>
+
+    <div class="tool-card" onclick="selectTool('pdf')">
+        <h3>Image to PDF</h3>
+        <p>Merge multiple images into one PDF</p>
     </div>
 </div>
 
@@ -225,10 +365,6 @@ button {
 
 </form>
 
-<p style="font-size:12px; opacity:0.7;">
-    Your files are processed securely and automatically deleted after use.
-</p>
-
 <div id="loader">⏳ Processing...</div>
 
 <div id="progressBarContainer">
@@ -240,6 +376,10 @@ button {
 <a id="downloadLink"></a>
 
 </div>
+
+<p style="font-size:12px; opacity:0.7;">
+    Your files are processed securely and automatically deleted after use.
+</p>
 
 <div id="toast"></div>
 
@@ -313,6 +453,17 @@ newFiles.forEach(file => {
 });
     render();
 });
+
+function selectTool(mode) {
+    modeSelect.value = mode;
+
+    modeSelect.dispatchEvent(new Event("change"));
+
+    window.scrollTo({
+        top: document.getElementById("uploadForm").offsetTop - 50,
+        behavior: "smooth"
+    });
+}
 
 // render
 function render() {
@@ -431,7 +582,12 @@ form.addEventListener("submit", async (e) => {
             ? ((data.original_size_kb - data.output_size_kb) / data.original_size_kb * 100).toFixed(1)
             : 0;
 
-        bar.style.width = reduction + "%";
+      bar.style.width = "0%";
+
+    setTimeout(() => {
+    bar.style.width = reduction + "%";
+    }, 100);
+
         result.innerText = `Reduced ${reduction}%`;
     } else {
         bar.style.width = "100%";
@@ -470,6 +626,10 @@ dropZone.addEventListener("drop", (e) => {
     render();
 });
 </script>
+
+<footer style="margin-top:50px; font-size:12px; opacity:0.6;">
+    © 2026 DRZ Tools • Fast • Secure • No Data Stored
+</footer>
 
 </body>
 </html>
