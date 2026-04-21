@@ -23,7 +23,7 @@ body.light {
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
+    body:not(.light) {
         --bg: #121212;
         --text: #ffffff;
         --box: #1e1e1e;
@@ -118,7 +118,7 @@ button {
     font-size: 14px;
     font-weight: 500;
     background: #ff0000;
-    color: white;
+    color: rgb(255, 255, 255);
     transition: all 0.2s ease;
 }
 
@@ -132,16 +132,22 @@ button:hover {
 }
 
 #dropZone {
-    border: 2px dashed #ad1919;
-    padding: 25px;
-    border-radius: 12px;
+    border: 2px dashed rgba(0,0,0,0.2);
+    padding: 30px;
+    border-radius: 14px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s ease;
+    background: var(--bg);
+}
+
+#dropZone:hover {
+    border-color: #ff3300;
+    background: rgba(0,123,255,0.04);
 }
 
 #dropZone.active {
-    background: rgba(47, 85, 125, 0.15);
-    border-color: #142f4c;
+    border-color: #ff0000;
+    background: rgba(0,123,255,0.08);
     transform: scale(1.02);
 }
 
@@ -467,6 +473,34 @@ body {
     font-size: 14px;
 }
 
+.cta-buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.secondary {
+    color: var(--text);
+    border: 1px solid rgba(0, 55, 206, 0.885);
+}
+
+.secondary:hover {
+    background: var(--box);
+}
+
+.tools {
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
+.tool-card,
+button,
+input,
+select {
+    transition: all 0.2s ease;
+}
+
 </style>
 </head>
 
@@ -492,6 +526,17 @@ body {
 </div>
 
 <div class="hero">
+    <h1>Media tools that just work.</h1>
+    <p>Compress, convert, and create PDFs in seconds — fast, private, and free.</p>
+
+    <div class="cta-buttons">
+        <button onclick="selectTool('compress')">Compress Images</button>
+        <button class="secondary" onclick="selectTool('pdf')">Create PDF</button>
+        <button class="secondary" onclick="selectTool('convert')">Convert Images</button>
+    </div>
+</div>
+
+<div class="hero">
     <h1>Fast, Secure & Free Media Tools by DRZ</h1>
     <p>Compress, Convert, and merge images to PDF instantly — no signup needed.</p>
     <p>Secure and private</p>
@@ -505,27 +550,31 @@ body {
 
 <div class="tools">
     <div class="tool-card" onclick="selectTool('compress')">
-        <h3>Image Compressor</h3>
+        <h3>🗜 Image Compressor</h3>
         <p>Reduce image size without losing quality</p>
     </div>
 
     <div class="tool-card" onclick="selectTool('convert')">
-        <h3>Image Converter</h3>
-        <p>Convert PNG ↔ JPG / PNG ↔ JPG</p>
+        <h3>🔄 Image Converter</h3>
+        <p>Convert PNG ↔ JPG instantly</p>
     </div>
 
     <div class="tool-card" onclick="selectTool('pdf')">
-        <h3>Image to PDF</h3>
-        <p>Merge multiple images into one PDF</p>
+        <h3>📄 Image to PDF</h3>
+        <p>Merge images into one PDF</p>
     </div>
 </div>
+
+<h3 id="activeToolTitle">Compress Images</h3>
 
 <form id="uploadForm">
 
     <div class="form-card"></div>
 
-<div id="dropZone">Drop images here or click to upload</div>
-<input type="file" id="fileInput" multiple required>
+<div id="dropZone">
+    <strong>Click to upload</strong> or drag & drop images<br>
+    <span style="font-size:12px; opacity:0.6;">PNG, JPG supported</span>
+</div>
 
 <div id="previewContainer"></div>
 
@@ -558,6 +607,7 @@ body {
 
 <div id="loader">⏳ Processing...</div>
 
+
 <div id="progressBarContainer">
     <div id="progressBar"></div>
 </div>
@@ -572,6 +622,10 @@ body {
     Your files are processed securely and automatically deleted after use.
 </p>
 
+<footer style="margin-top:60px; font-size:13px; opacity:0.7;">
+   • Private <br>
+    No files are stored. Everything is processed instantly.
+</footer>
 <div id="toast"></div>
 
 <script>
@@ -649,6 +703,14 @@ function selectTool(mode) {
     modeSelect.value = mode;
     modeSelect.dispatchEvent(new Event("change"));
 
+    const titles = {
+        compress: "Compress Images",
+        convert: "Convert Images",
+        pdf: "Create PDF"
+    };
+
+    document.getElementById("activeToolTitle").innerText = titles[mode];
+
     document.querySelectorAll(".tool-card").forEach(card => {
         card.classList.remove("active");
     });
@@ -656,7 +718,7 @@ function selectTool(mode) {
     event.currentTarget.classList.add("active");
 
     window.scrollTo({
-        top: document.getElementById("uploadForm").offsetTop - 50,
+        top: document.getElementById("uploadForm").offsetTop - 60,
         behavior: "smooth"
     });
 }
