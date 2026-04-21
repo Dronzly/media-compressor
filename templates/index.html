@@ -907,29 +907,32 @@ previewContainer.addEventListener("dragleave", (e) => {
     if (item) item.classList.remove("over");
 });
 
-const toggleBtn = document.getElementById("themeToggle");
+document.addEventListener("DOMContentLoaded", () => {
 
-// Load saved theme
-const savedTheme = localStorage.getItem("theme");
+    const toggleBtn = document.getElementById("themeToggle");
 
-if (savedTheme) {
-    document.body.classList.add(savedTheme);
-    toggleBtn.innerText = savedTheme === "dark" ? "☀️" : "🌙";
-}
+    const savedTheme = localStorage.getItem("theme");
 
-// Toggle click
-toggleBtn.addEventListener("click", () => {
-    if (document.body.classList.contains("dark")) {
-        document.body.classList.remove("dark");
-        document.body.classList.add("light");
-        localStorage.setItem("theme", "light");
-        toggleBtn.innerText = "🌙";
-    } else {
-        document.body.classList.remove("light");
-        document.body.classList.add("dark");
-        localStorage.setItem("theme", "dark");
-        toggleBtn.innerText = "☀️";
+    if (savedTheme) {
+        document.body.classList.add(savedTheme);
+        toggleBtn.innerText = savedTheme === "dark" ? "☀️" : "🌙";
     }
+console.log(toggleBtn);
+
+    toggleBtn.addEventListener("click", () => {
+        if (document.body.classList.contains("dark")) {
+            document.body.classList.remove("dark");
+            document.body.classList.add("light");
+            localStorage.setItem("theme", "light");
+            toggleBtn.innerText = "🌙";
+        } else {
+            document.body.classList.remove("light");
+            document.body.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+            toggleBtn.innerText = "☀️";
+        }
+    });
+
 });
 
 </script>
