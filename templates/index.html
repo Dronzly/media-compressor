@@ -569,12 +569,14 @@ select {
 
 <form id="uploadForm">
 
-    <div class="form-card"></div>
+<div class="form-card"></div>
 
 <div id="dropZone">
     <strong>Click to upload</strong> or drag & drop images<br>
     <span style="font-size:12px; opacity:0.6;">PNG, JPG supported</span>
 </div>
+
+<input type="file" id="fileInput" multiple>
 
 <div id="previewContainer"></div>
 
@@ -650,6 +652,8 @@ const bar = document.getElementById("progressBar");
 
 const toast = document.getElementById("toast");
 
+const dropZone = document.getElementById("dropZone");
+
 function showToast(msg) {
     toast.innerText = msg;
     toast.classList.add("show");
@@ -661,6 +665,8 @@ function showToast(msg) {
 
 let fileList = [];
 let dragIndex = null;
+
+dropZone.addEventListener("click", () => fileInput.click());
 
 // sync
 function sync(val) {
@@ -875,16 +881,6 @@ form.addEventListener("submit", async (e) => {
 });
 
 // drop zone
-const dropped = Array.from(e.dataTransfer.files);
-
-dropped.forEach(file => {
-    if (!file.type.startsWith("image/")) {
-        showToast("Only image files allowed");
-        return;
-    }
-    fileList.push(file);
-});
-
 dropZone.addEventListener("dragleave", () => {
     dropZone.classList.remove("active");
 });
