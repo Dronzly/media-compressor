@@ -1,17 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Media Tool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Media Tools</title>
 
 <style>
+
+html {
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .navbar {
+        padding: 12px 16px;
+    }
+
+    .hero h1 {
+        font-size: 22px;
+    }
+
+    .hero p {
+        font-size: 13px;
+    }
+
+    .tools {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tool-card {
+        width: 90%;
+    }
+
+    .form-card {
+        width: 95%;
+        padding: 16px;
+    }
+
+    #dropZone {
+        padding: 20px;
+        font-size: 14px;
+    }
+
+    input, select {
+        width: 100%;
+        max-width: 100%;
+        font-size: 14px;
+    }
+
+    input[type="range"] {
+        width: 100%;
+    }
+    
+    button {
+        width: 100%;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .preview-item {
+        width: 70px;
+        height: 70px;
+    }
+
+    .label-row {
+        width: 100%;
+    }
+}
+
 :root {
+    --bg: #ffffff;
+    --text: #000000;
+    --box: #712121;
+}
+
+body.dark {
+    --bg: #121212;
+    --text: #ffffff;
+    --box: #1e1e1e;
+}
+
+body.light {
     --bg: #ffffff;
     --text: #000000;
     --box: #f4f4f4;
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
+    body:not(.light) {
         --bg: #121212;
         --text: #ffffff;
         --box: #1e1e1e;
@@ -19,45 +103,176 @@
 }
 
 body {
+    margin: 0; 
     font-family: Arial;
     background: var(--bg);
     color: var(--text);
     text-align: center;
-    padding-top: 50px;
+    padding-top: 0; 
 }
 
 .container {
-    background: var(--box);
-    padding: 30px;
-    border-radius: 10px;
-    width: 400px;
+    max-width: 900px;
+    width: 90%;
     margin: auto;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.container {
+    width: 100%;
+    max-width: 1000px;
+    padding: 20px;
+    margin: auto;
+}
+
+.hero {
+    margin-bottom: 30px;
+}
+
+.hero h1 {
+    font-size: 26px;
+}
+
+.features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.features div {
+    background: var(--box);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
 }
 
 input, button, select {
     margin: 10px;
     padding: 10px;
+    border-radius: 8px;
+}
+
+input, select {
+    width: 100%;
+    max-width: 420px;
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.15);
+    background: transparent;
+    color: var(--text);
+}
+
+/*Dark mode styles for inputs and selects */
+select {
+    background: var(--bg);
+    color: var(--text);
+}
+
+select option {
+    background: #ffffff;
+    color: #000000;
+}
+
+body.dark select option {
+    background: #1e1e1e;
+    color: #ffffff;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
+}
+
+input, select, button {
+    transition: all 0.2s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
+}
+
+input[type="range"] {
+    width: 60%;
+    max-width: 400px;
+}
+
+select {
+    cursor: pointer;
+}
+
+button {
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+
+    background: linear-gradient(135deg, #ff3b3b, #ff6a00);
+    color: white;
+
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(255, 80, 0, 0.3);
+}
+#dropZone {
+    border: 2px dashed rgba(0,0,0,0.2);
+    padding: 30px;
+    border-radius: 16px;
+
+    background: rgb(255, 115, 0);
+    backdrop-filter: blur(6px);
+
+    transition: all 0.25s ease;
+}
+
+#dropZone:hover {
+    border-color: #ff3b3b;
+    background: rgba(255, 80, 0, 0.05);
+    transform: scale(1.02);
+}
+#dropZone.active {
+    border-color: #ff0000;
+    background: rgba(0,123,255,0.08);
+    transform: scale(1.02);
+}
+
+#dropZone {
+    transition: all 0.2s ease;
 }
 
 #previewContainer {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 15px;
+    justify-content: center;
+    padding: 10px;
+    border: 2px dashed #ccc;
+    border-radius: 10px;
 }
 
 .preview-item {
     width: 80px;
     height: 80px;
-    cursor: grab;
     position: relative;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    cursor: grab;
 }
 
-.preview-item:active {
-    cursor: grabbing;
-    transform: scale(1.05);
-    opacity: 0.7;
+.preview-item:hover {
+    transform: scale(1.08);
+}
+
+.preview-item {
+    transition: transform 0.25s ease, opacity 0.2s ease;
 }
 
 .preview-item img {
@@ -92,29 +307,425 @@ input, button, select {
     cursor: pointer;
 }
 
-/* 🔥 custom drag preview */
-#dragPreview {
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    width: 80px;
-    height: 80px;
-    opacity: 0.8;
+#loader {
+    display: none;
+    margin-top: 10px;
+}
+
+#progressBarContainer {
+    width: 80%;
+    margin: 10px auto;
+    height: 10px;
+    background: #ccc;
+    border-radius: 10px;
+    overflow: hidden;
     display: none;
 }
+
+#progressBar {
+    height: 100%;
+    width: 0%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #ff3b3b, #ff9a00);
+    transition: width 0.4s ease;
+}
+
+#toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #222;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 0.3s;
+    z-index: 999;
+}
+
+#toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.preview-item:hover {
+    transform: scale(1.05);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 40px;
+
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+
+    border-bottom: 1px solid rgba(81, 81, 81, 0.97);
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+body.dark .navbar {
+    background: rgba(27, 27, 27, 0.947);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.nav-links span {
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.nav-links span:hover {
+    opacity: 1;
+}
+
+.nav-links span {
+    margin-left: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .nav-links span {
+        display: none; /* hide "All Tools", "About" */
+    }
+}
+
+.hero {
+    margin: 40px 0;
+}
+
+.hero h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    opacity: 0.7;
+}
+
+.tools {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.tool-card {
+    width: 240px;
+    padding: 18px;
+    border-radius: 16px;
+
+    background: rgba(2, 2, 2, 0.6);
+    backdrop-filter: blur(8px);
+
+    border: 1px solid rgba(0,0,0,0.05);
+
+    transition: all 0.25s ease;
+}
+
+.tool-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    border-color: #007BFF;
+}
+
+.tool-card.active {
+    border-color: #ff0000e9;
+    background: rgba(237, 242, 247, 0.05);
+}
+
+.tool-card h3 {
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.tool-card p {
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+.tool-card:hover {
+    transform: translateY(-4px);
+    border-color: #007BFF;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+.tool-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.preview-item:hover {
+    transform: scale(1.08);
+}
+
+.container {
+    animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+button:active {
+    transform: scale(0.96);
+}
+
+#loader {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.preview-item.over {
+    outline: 2px dashed #007BFF;
+    transform: scale(1.1);
+}
+
+#themeToggle {
+    margin-left: 15px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: var(--box);
+    color: var(--text);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+input, select {
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.form-card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg);
+    padding: 22px;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.label-row {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+input[type="range"] {
+    width: 100%;
+    max-width: 420px;
+    height: 6px;
+    border-radius: 10px;
+    background: #ccc;
+    outline: none;
+}
+
+form {
+    display: flex;
+    justify-content:  center;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.container {
+    max-width: 1000px;
+    width: 90%;
+    margin: 40px auto;
+    padding: 40px;
+    border-radius: 18px;
+
+    background: rgb(66, 66, 66);
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 10px 30px rgba(206, 14, 14, 0.879),
+        0 1px 2px rgba(255, 18, 18, 0.995);
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa, #e4ecf5);
+}
+body.dark {
+    background: linear-gradient(135deg, #03a3f4, #048dc3);
+}
+
+.hero h1 {
+    font-weight: 600;
+}
+
+.hero p {
+    font-size: 14px;
+}
+
+.cta-buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.secondary {
+    color: var(--text);
+    border: 1px solid rgba(0, 55, 206, 0.885);
+}
+
+.secondary:hover {
+    background: var(--box);
+}
+
+.tools {
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
+.tool-card,
+button,
+input,
+select {
+    transition: all 0.2s ease;
+}
+
+h1, h2, h3 {
+    letter-spacing: -0.5px;
+}
+
+.hero h1 {
+    font-size: 34px;
+}
+
+.hero p {
+    font-size: 15px;
+    opacity: 0.75;
+}
+
 </style>
 </head>
 
 <body>
+    
+<div class="navbar">
+    <h2>DRZ Tools</h2>
+    <div class="nav-links">
+        <span>All Tools</span>
+        <span>About</span>
+        <button id="themeToggle">🌙</button>
+    </div>
+</div>
 
 <div class="container">
-<h1>Media Tool by DRZ</h1>
+
+<div class="hero">
+    <h1>All-in-One Media Toolkit</h1>
+    <p>
+        Compress, convert, and create PDFs instantly.<br>
+        Fast. Secure. No uploads stored.
+    </p>
+</div>
+
+<div class="hero">
+    <h1>Media tools that just work.</h1>
+    <p>Compress, convert, and create PDFs in seconds — fast, private, and free.</p>
+
+    <div class="cta-buttons">
+        <button onclick="selectTool('compress')">Compress Images</button>
+        <button class="secondary" onclick="selectTool('pdf')">Create PDF</button>
+        <button class="secondary" onclick="selectTool('convert')">Convert Images</button>
+    </div>
+</div>
+
+<div class="hero">
+    <h1>Fast, Secure & Free Media Tools by DRZ</h1>
+    <p>Compress, Convert, and merge images to PDF instantly — no signup needed.</p>
+    <p>Secure and private</p>
+    <div class="features">
+        <div>⚡ Fast</div>
+        <div>🔒 Secure</div>
+        <div>📁 Multi Format</div>
+        <div>📦 Batch Support</div>
+    </div>
+</div>
+
+<div class="tools">
+    <div class="tool-card" onclick="selectTool('compress')">
+        <h3>🗜 Image Compressor</h3>
+        <p>Reduce image size without losing quality</p>
+    </div>
+
+    <div class="tool-card" onclick="selectTool('convert')">
+        <h3>🔄 Image Converter</h3>
+        <p>Convert PNG ↔ JPG instantly</p>
+    </div>
+
+    <div class="tool-card" onclick="selectTool('pdf')">
+        <h3>📄 Image to PDF</h3>
+        <p>Merge images into one PDF</p>
+    </div>
+</div>
+
+<h3 id="activeToolTitle">Compress Images</h3>
 
 <form id="uploadForm">
-<input type="file" id="fileInput" multiple required>
+
+
+<div id="dropZone">
+    <strong>Click to upload</strong> or drag & drop images<br>
+    <span style="font-size:12px; opacity:0.6;">PNG, JPG supported</span>
+</div>
+
+<input type="file" id="fileInput" multiple>
+
 <div id="previewContainer"></div>
 
-<label>Quality: <span id="qualityValue">50</span></label><br>
+<div class="label-row">
+    <span>Quality</span>
+    <span id="qualityValue">50</span>
+</div>
+
+<br>
 
 <input type="range" id="qualitySlider" min="10" max="95" value="50"><br>
 <input type="number" id="qualityInput" min="10" max="95" value="50"><br>
@@ -131,24 +742,42 @@ input, button, select {
 </select><br>
 
 <button type="submit" id="submitBtn">Compress</button>
+
+</div>
+
 </form>
+
+<div id="loader">⏳ Processing...</div>
+
+
+<div id="progressBarContainer">
+    <div id="progressBar"></div>
+</div>
 
 <p id="pageCount"></p>
 <p id="result"></p>
 <a id="downloadLink"></a>
+
 </div>
 
-<!-- 🔥 drag preview element -->
-<img id="dragPreview">
+<p style="font-size:12px; opacity:0.7;">
+    Your files are processed securely and automatically deleted after use.
+</p>
+
+<footer style="margin-top:60px; font-size:13px; opacity:0.7;">
+   • Private <br>
+    No files are stored. Everything is processed instantly.
+</footer>
+<div id="toast"></div>
 
 <script>
-const pageCount = document.getElementById("pageCount");
-const form = document.getElementById("uploadForm");
 const fileInput = document.getElementById("fileInput");
 const previewContainer = document.getElementById("previewContainer");
+const pageCount = document.getElementById("pageCount");
+const form = document.getElementById("uploadForm");
 const result = document.getElementById("result");
 const downloadLink = document.getElementById("downloadLink");
-const dragPreview = document.getElementById("dragPreview");
+const loader = document.getElementById("loader");
 
 const modeSelect = document.getElementById("mode");
 const formatSelect = document.getElementById("format");
@@ -158,8 +787,26 @@ const slider = document.getElementById("qualitySlider");
 const input = document.getElementById("qualityInput");
 const valueText = document.getElementById("qualityValue");
 
+const barContainer = document.getElementById("progressBarContainer");
+const bar = document.getElementById("progressBar");
+
+const toast = document.getElementById("toast");
+
+const dropZone = document.getElementById("dropZone");
+
+function showToast(msg) {
+    toast.innerText = msg;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2500);
+}
+
 let fileList = [];
-let dragStartIndex = null;
+let dragIndex = null;
+
+dropZone.addEventListener("click", () => fileInput.click());
 
 // sync
 function sync(val) {
@@ -174,9 +821,9 @@ input.oninput = () => sync(input.value);
 modeSelect.addEventListener("change", () => {
     const mode = modeSelect.value;
 
-    slider.disabled = (mode !== "compress");
-    input.disabled = (mode !== "compress");
-    formatSelect.disabled = (mode !== "convert");
+    slider.disabled = mode !== "compress";
+    input.disabled = mode !== "compress";
+    formatSelect.disabled = mode !== "convert";
 
     submitBtn.innerText =
         mode === "pdf" ? "Create PDF" :
@@ -186,12 +833,44 @@ modeSelect.addEventListener("change", () => {
 
 // file select
 fileInput.addEventListener("change", () => {
-    fileList = Array.from(fileInput.files);
-    updatePreview();
+    const newFiles = Array.from(fileInput.files);
+
+newFiles.forEach(file => {
+    if (!file.type.startsWith("image/")) {
+        showToast("Only image files allowed");
+        return;
+    }
+    fileList.push(file);
+});
+    render();
 });
 
-// render preview
-function updatePreview() {
+function selectTool(mode) {
+    modeSelect.value = mode;
+    modeSelect.dispatchEvent(new Event("change"));
+
+    const titles = {
+        compress: "Compress Images",
+        convert: "Convert Images",
+        pdf: "Create PDF"
+    };
+
+    document.getElementById("activeToolTitle").innerText = titles[mode];
+
+    document.querySelectorAll(".tool-card").forEach(card => {
+        card.classList.remove("active");
+    });
+
+    event.currentTarget.classList.add("active");
+
+    window.scrollTo({
+        top: document.getElementById("uploadForm").offsetTop - 60,
+        behavior: "smooth"
+    });
+}
+
+// render
+function render() {
     previewContainer.innerHTML = "";
 
     fileList.forEach((file, index) => {
@@ -203,65 +882,66 @@ function updatePreview() {
         const img = document.createElement("img");
         img.src = URL.createObjectURL(file);
 
-        const number = document.createElement("div");
-        number.className = "preview-number";
-        number.innerText = index + 1;
+        const num = document.createElement("div");
+        num.className = "preview-number";
+        num.innerText = index + 1;
 
-        const removeBtn = document.createElement("button");
-        removeBtn.className = "remove-btn";
-        removeBtn.innerText = "×";
+        const remove = document.createElement("button");
+        remove.className = "remove-btn";
+        remove.innerText = "×";
 
-        removeBtn.onclick = (e) => {
+        remove.onclick = (e) => {
             e.stopPropagation();
             fileList.splice(index, 1);
-            updatePreview();
+            render();
         };
 
         div.appendChild(img);
-        div.appendChild(number);
-        div.appendChild(removeBtn);
+        div.appendChild(num);
+        div.appendChild(remove);
         previewContainer.appendChild(div);
     });
 
     pageCount.innerText = `Total Pages: ${fileList.length}`;
 }
 
-// drag start
+// drag
 previewContainer.addEventListener("dragstart", (e) => {
     const item = e.target.closest(".preview-item");
     if (!item) return;
 
-    dragStartIndex = item.dataset.index;
+    dragIndex = item.dataset.index;
+    e.dataTransfer.setData("text/plain", "");
 
     const img = item.querySelector("img");
-    dragPreview.src = img.src;
-    dragPreview.style.display = "block";
+    e.dataTransfer.setDragImage(img, 40, 40);
 });
 
-// follow cursor
-document.addEventListener("dragover", (e) => {
-    dragPreview.style.left = e.pageX + "px";
-    dragPreview.style.top = e.pageY + "px";
+previewContainer.addEventListener("dragenter", (e) => {
+    const item = e.target.closest(".preview-item");
+    if (item) item.classList.add("over");
 });
 
-// drag end
-previewContainer.addEventListener("dragend", () => {
-    dragPreview.style.display = "none";
+previewContainer.addEventListener("dragleave", (e) => {
+    const item = e.target.closest(".preview-item");
+    if (item) item.classList.remove("over");
 });
 
-// drop reorder
 previewContainer.addEventListener("dragover", (e) => e.preventDefault());
 
 previewContainer.addEventListener("drop", (e) => {
-    const item = e.target.closest(".preview-item");
-    if (!item) return;
+    const target = e.target.closest(".preview-item");
+    if (!target) return;
 
-    const dragEndIndex = item.dataset.index;
+    const dropIndex = target.dataset.index;
 
-    [fileList[dragStartIndex], fileList[dragEndIndex]] =
-    [fileList[dragEndIndex], fileList[dragStartIndex]];
+   const draggedItem = fileList.splice(dragIndex, 1)[0];
+  fileList.splice(dropIndex, 0, draggedItem);
 
-    updatePreview();
+   document.querySelectorAll(".preview-item").forEach(el => {
+        el.classList.remove("over");
+    });
+    render(); 
 });
 
 // submit
@@ -270,23 +950,25 @@ form.addEventListener("submit", async (e) => {
 
     if (fileList.length === 0) return;
 
+    loader.style.display = "block";
+    submitBtn.disabled = true;
+
+    bar.style.width = "0%";
+    barContainer.style.display = "none";
+
     const mode = modeSelect.value;
     const format = formatSelect.value;
     const quality = input.value;
 
     result.innerText =
-        mode === "pdf" ? "Creating PDF..." :
-        mode === "convert" ? "Converting..." :
-        "Compressing...";
+    mode === "pdf" ? "Creating PDF..." :
+    mode === "convert" ? "Converting..." :
+    "Compressing...";
 
     const formData = new FormData();
-
-    fileList.forEach(file => {
-        formData.append("files", file);
-    });
+    fileList.forEach(file => formData.append("files", file));
 
     formData.append("mode", mode);
-
     if (mode === "compress") formData.append("quality", quality);
     if (mode === "convert") formData.append("format", format);
 
@@ -295,17 +977,105 @@ form.addEventListener("submit", async (e) => {
         body: formData
     });
 
+    loader.style.display = "none";
+    submitBtn.disabled = false;
+
+    if (!res.ok) {
+        result.innerText = "Something went wrong.";
+        return;
+    }
+
     const data = await res.json();
 
-    result.innerText =
-        mode === "pdf" ? "PDF created successfully" :
-        mode === "convert" ? "Conversion done" :
-        `Original: ${data.original_size_kb} KB | Output: ${data.output_size_kb} KB`;
+    if (data.error) {
+        result.innerText = data.error;
+        return;
+    }
+
+    barContainer.style.display = "block";
+
+    if (mode === "compress") {
+        const reduction = data.original_size_kb > 0
+            ? ((data.original_size_kb - data.output_size_kb) / data.original_size_kb * 100).toFixed(1)
+            : 0;
+
+      bar.style.width = "0%";
+
+    setTimeout(() => {
+    bar.style.width = reduction + "%";
+    }, 100);
+
+        result.innerText = `Reduced ${reduction}%`;
+    } else {
+        bar.style.width = "100%";
+        result.innerText =
+    mode === "pdf" ? "PDF ready ✅" :
+    mode === "convert" ? "Converted successfully ✅" :
+    result.innerText;
+    }
 
     downloadLink.href = `/download/${data.compressed_filename}`;
+    downloadLink.click();
+        showToast("Download started 🚀");
     downloadLink.innerText = "Download File";
 });
+
+// drop zone
+dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("active");
+});
+
+dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("active");
+
+    fileList = fileList.concat(Array.from(e.dataTransfer.files));
+    render();
+});
+
+previewContainer.addEventListener("dragenter", (e) => {
+    const item = e.target.closest(".preview-item");
+    if (item) item.classList.add("over");
+});
+
+previewContainer.addEventListener("dragleave", (e) => {
+    const item = e.target.closest(".preview-item");
+    if (item) item.classList.remove("over");
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const toggleBtn = document.getElementById("themeToggle");
+
+    const savedTheme = localStorage.getItem("theme");
+
+    if (savedTheme) {
+        document.body.classList.add(savedTheme);
+        toggleBtn.innerText = savedTheme === "dark" ? "☀️" : "🌙";
+    }
+console.log(toggleBtn);
+
+    toggleBtn.addEventListener("click", () => {
+        if (document.body.classList.contains("dark")) {
+            document.body.classList.remove("dark");
+            document.body.classList.add("light");
+            localStorage.setItem("theme", "light");
+            toggleBtn.innerText = "🌙";
+        } else {
+            document.body.classList.remove("light");
+            document.body.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+            toggleBtn.innerText = "☀️";
+        }
+    });
+
+});
+
 </script>
+
+<footer style="margin-top:50px; font-size:12px; opacity:0.6;">
+    © 2026 DRZ Tools • Fast • Secure • No Data Stored
+</footer>
 
 </body>
 </html>
